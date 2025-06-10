@@ -1,0 +1,20 @@
+name: Deploy to Internet Computer
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Deploy to IC
+        uses: your-username/ic-deploy-action@v1
+        with:
+          pem_key: ${{ secrets.IC_PEM_KEY }}
+          network: 'ic'
+          deploy_frontend: 'true'
+          frontend_dir: 'dist' 

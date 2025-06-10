@@ -1,0 +1,58 @@
+name: 'Internet Computer Deploy Action'
+description: 'Deploy Internet Computer canisters and frontend assets to IC networks'
+
+inputs:
+  pem_key:
+    description: 'Base64 encoded PEM key for authentication'
+    required: true
+  network:
+    description: 'Network to deploy to (local, testnet, ic)'
+    required: true
+    default: 'ic'
+  canister_name:
+    description: 'Name of the canister to deploy (optional if deploying all canisters)'
+    required: false
+  deploy_frontend:
+    description: 'Whether to deploy frontend assets (default: true)'
+    required: false
+    default: 'true'
+  frontend_dir:
+    description: 'Directory containing frontend assets (default: dist)'
+    required: false
+    default: 'dist'
+
+runs:
+  using: "composite"
+  steps:
+    - name: Install dfx
+      uses: dfinity/setup-dfx@main
+
+    - name: Authenticate dfx
+      shell: bash
+      run: |
+        # Check if identity exists, if not create it
+        if ! dfx identity list | grep -q "deploy_identity"; then
+          echo ${{ inputs.pem_key }} | base64 --decode > deploy_identity.pem
+          dfx identity import --storage-mode=plaintext deploy_identity deploy_identity.pem
+        fi
+        dfx identity use deploy_identity
+
+    - name: Deploy canisters
+      shell: bash
+      run: |
+        if [ -n "${{ inputs.canister_name }}" ]; then
+          dfx deploy ${{ inputs.canister_name }} --network ${{ inputs.network }} --yes
+        else
+          dfx deploy --network ${{ inputs.network }} --yes
+        fi
+
+    - name: Deploy frontend assets
+      if: ${{ inputs.deploy_frontend == 'true' }}
+      shell: bash
+      run: |
+        if [ -d "${{ inputs.frontend_dir }}" ]; then
+          dfx canister install frontend --network ${{ inputs.network }} --yes
+        else
+          echo "Frontend directory not found at ${{ inputs.frontend_dir }}"
+          exit 1
+        fi 
