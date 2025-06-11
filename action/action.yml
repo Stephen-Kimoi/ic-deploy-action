@@ -39,6 +39,8 @@ runs:
 
     - name: Deploy canisters
       shell: bash
+      env:
+        DFX_WARNING: "-mainnet_plaintext_identity"
       run: |
         if [ -n "${{ inputs.canister_name }}" ]; then
           dfx deploy ${{ inputs.canister_name }} --network ${{ inputs.network }} --yes
@@ -49,6 +51,8 @@ runs:
     - name: Deploy frontend assets
       if: ${{ inputs.deploy_frontend == 'true' }}
       shell: bash
+      env:
+        DFX_WARNING: "-mainnet_plaintext_identity"
       run: |
         if [ -d "${{ inputs.frontend_dir }}" ]; then
           dfx canister install frontend --network ${{ inputs.network }} --yes
