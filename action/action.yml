@@ -116,19 +116,18 @@ runs:
         RUSTFLAGS: "-D warnings"
       run: cargo test
 
-    - name: Deploy canisters
-      shell: bash
-      env:
-        DFX_WARNING: "-mainnet_plaintext_identity"
-        CARGO_BUILD_TARGET: "wasm32-unknown-unknown"
-        CARGO_TERM_COLOR: "always"
-        RUSTFLAGS: "-D warnings"
+    - name: Deploy Canister
       run: |
         source "$HOME/.local/share/dfx/env"
-        if [ -n "${{ inputs.canister_name }}" ]; then
-          dfx deploy ${{ inputs.canister_name }} --network ${{ inputs.network }} --yes
+        echo "Deploying: ${{ inputs.canister_name }}"
+        
+        # Check if canister exists
+        if dfx canister --network ${{ inputs.network }} info ${{ inputs.canister_name }} 2>/dev/null; then
+          echo "Canister already exists, proceeding with upgrade..."
+          dfx deploy --network ${{ inputs.network }} ${{ inputs.canister_name }} --no-wallet
         else
-          dfx deploy --network ${{ inputs.network }} --yes
+          echo "Canister does not exist, creating new canister..."
+          dfx deploy --network ${{ inputs.network }} ${{ inputs.canister_name }} --no-wallet
         fi
 
     - name: Prepare Frontend Build
