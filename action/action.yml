@@ -39,6 +39,10 @@ inputs:
     description: 'Gzip the wasm file'
     required: false
     default: 'true'
+  frontend_src_dir:
+    description: 'Directory containing frontend source code (default: src/frontend)'
+    required: false
+    default: 'src/frontend'
 
 runs:
   using: "composite"
@@ -107,6 +111,35 @@ runs:
         else
           dfx deploy --network ${{ inputs.network }} --yes
         fi
+
+    - name: Prepare Frontend Build
+      if: ${{ inputs.deploy_frontend == 'true' }}
+      shell: bash
+      run: |
+        source "$HOME/.local/share/dfx/env"
+        mkdir -p .dfx/local/canisters/${{ inputs.frontend_package }}
+        if [ -f "${{ inputs.frontend_src_dir }}/assetstorage.did" ]; then
+          cp ${{ inputs.frontend_src_dir }}/assetstorage.did .dfx/local/canisters/${{ inputs.frontend_package }}/
+        fi
+
+    - name: Build Frontend
+      if: ${{ inputs.deploy_frontend == 'true' }}
+      shell: bash
+      run: |
+        source "$HOME/.local/share/dfx/env"
+        # Create necessary directories
+        mkdir -p $GITHUB_WORKSPACE/wasm
+        cd $GITHUB_WORKSPACE/${{ inputs.frontend_src_dir }}
+        npm install
+        # Build the frontend assets
+        npm run build
+        # Create the frontend canister
+        cd $GITHUB_WORKSPACE
+        dfx canister create ${{ inputs.frontend_package }} --network ${{ inputs.network }} || true
+        # Build the frontend canister
+        dfx build ${{ inputs.frontend_package }} --network ${{ inputs.network }}
+        # Copy the wasm file to the wasm directory
+        cp .dfx/${{ inputs.network }}/canisters/${{ inputs.frontend_package }}/${{ inputs.frontend_package }}.wasm.gz $GITHUB_WORKSPACE/wasm/${{ inputs.frontend_package }}.wasm.gz
 
     - name: Deploy frontend assets
       if: ${{ inputs.deploy_frontend == 'true' }}
