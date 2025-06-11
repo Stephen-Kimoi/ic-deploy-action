@@ -18,6 +18,7 @@ jobs:
           network: 'ic'
           deploy_frontend: 'true'
           frontend_dir: 'dist'
-          package: 'backend'
+          backend_package: 'backend'
+          frontend_package: 'frontend'
           test: 'true'
           gzip: 'true' 
