@@ -164,6 +164,24 @@ runs:
         # Copy the wasm file to the wasm directory
         cp .dfx/${{ inputs.network }}/canisters/${{ inputs.frontend_package }}/${{ inputs.frontend_package }}.wasm.gz $GITHUB_WORKSPACE/wasm/${{ inputs.frontend_package }}.wasm.gz
 
+    - name: Deploy Frontend
+      if: ${{ inputs.deploy_frontend == 'true' }}
+      shell: bash
+      env:
+        DFX_WARNING: "-mainnet_plaintext_identity"
+      run: |
+        source "$HOME/.local/share/dfx/env"
+        echo "Deploying frontend..."
+        
+        # Check if frontend canister exists
+        if ! dfx canister --network ${{ inputs.network }} info ${{ inputs.frontend_package }} 2>/dev/null; then
+          echo "Creating frontend canister..."
+          dfx canister create ${{ inputs.frontend_package }} --network ${{ inputs.network }} --no-wallet
+        fi
+        
+        # Deploy frontend
+        dfx deploy ${{ inputs.frontend_package }} --network ${{ inputs.network }} --no-wallet
+
     - name: Deploy frontend assets
       if: ${{ inputs.deploy_frontend == 'true' }}
       shell: bash
