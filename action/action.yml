@@ -43,6 +43,10 @@ inputs:
     description: 'Directory containing frontend source code (default: src/frontend)'
     required: false
     default: 'src/frontend'
+  min_cycles:
+    description: 'Minimum cycles balance required (in TC, default: 1)'
+    required: false
+    default: '1'
 
 runs:
   using: "composite"
@@ -66,6 +70,20 @@ runs:
           dfx identity import --storage-mode=plaintext deploy_identity deploy_identity.pem
         fi
         dfx identity use deploy_identity
+
+    - name: Check Cycles Balance
+      shell: bash
+      env:
+        DFX_WARNING: "-mainnet_plaintext_identity"
+      run: |
+        source "$HOME/.local/share/dfx/env"
+        BALANCE=$(dfx cycles balance --network ${{ inputs.network }} | grep -o '[0-9.]*' | head -1)
+        echo "Current cycles balance: $BALANCE TC"
+        if (( $(echo "$BALANCE < ${{ inputs.min_cycles }}" | bc -l) )); then
+          echo "Warning: Cycles balance is below minimum threshold of ${{ inputs.min_cycles }} TC"
+          echo "Please ensure you have sufficient cycles for deployment"
+          exit 1
+        fi
 
     - name: Build
       shell: bash
@@ -106,6 +124,7 @@ runs:
         CARGO_TERM_COLOR: "always"
         RUSTFLAGS: "-D warnings"
       run: |
+        source "$HOME/.local/share/dfx/env"
         if [ -n "${{ inputs.canister_name }}" ]; then
           dfx deploy ${{ inputs.canister_name }} --network ${{ inputs.network }} --yes
         else
@@ -152,6 +171,7 @@ runs:
         CARGO_TERM_COLOR: "always"
         RUSTFLAGS: "-D warnings"
       run: |
+        source "$HOME/.local/share/dfx/env"
         if [ -d "${{ inputs.frontend_dir }}" ]; then
           dfx canister install ${{ inputs.frontend_package }} --network ${{ inputs.network }} --yes
         else
