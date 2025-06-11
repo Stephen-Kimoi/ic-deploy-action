@@ -25,23 +25,7 @@ runs:
   using: "composite"
   steps:
     - name: Install dfx
-      shell: bash
-      run: |
-        # Create dfx directory
-        mkdir -p $HOME/.local/share/dfx/bin
-        
-        # Download and install dfx
-        curl -L https://github.com/dfinity/dfx/releases/latest/download/dfx-x86_64-linux.tar.gz -o dfx.tar.gz
-        tar -xzf dfx.tar.gz
-        mv dfx $HOME/.local/share/dfx/bin/
-        chmod +x $HOME/.local/share/dfx/bin/dfx
-        
-        # Add to PATH
-        echo 'export PATH="$HOME/.local/share/dfx/bin:$PATH"' >> $HOME/.bashrc
-        export PATH="$HOME/.local/share/dfx/bin:$PATH"
-        
-        # Cleanup
-        rm dfx.tar.gz
+      uses: dfinity/setup-dfx@main
 
     - name: Authenticate dfx
       shell: bash
