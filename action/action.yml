@@ -124,13 +124,12 @@ runs:
         source "$HOME/.local/share/dfx/env"
         echo "Deploying: ${{ inputs.canister_name }}"
         
-        # Check if canister_ids.json exists
+        # Check if canister_ids.json exists in the repository
         if [ -f "canister_ids.json" ]; then
           echo "Found existing canister_ids.json, using existing canister IDs"
           CANISTER_ID=$(jq -r ".${{ inputs.canister_name }}.${{ inputs.network }}" canister_ids.json)
           if [ "$CANISTER_ID" != "null" ]; then
             echo "Using existing canister ID: $CANISTER_ID"
-            dfx canister --network ${{ inputs.network }} call $CANISTER_ID --no-wallet || true
             dfx deploy --network ${{ inputs.network }} ${{ inputs.canister_name }} --no-wallet
           else
             echo "Canister ID not found in canister_ids.json, creating new canister"
@@ -139,6 +138,18 @@ runs:
         else
           echo "No canister_ids.json found, creating new canister"
           dfx deploy --network ${{ inputs.network }} ${{ inputs.canister_name }} --no-wallet
+        fi
+
+    - name: Commit canister_ids.json
+      if: success()
+      shell: bash
+      run: |
+        if [ -f "canister_ids.json" ]; then
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git config --global user.name "github-actions[bot]"
+          git add canister_ids.json
+          git commit -m "chore: update canister IDs" || true
+          git push origin main
         fi
 
     - name: Prepare Frontend Build
@@ -189,7 +200,6 @@ runs:
           CANISTER_ID=$(jq -r ".${{ inputs.frontend_package }}.${{ inputs.network }}" canister_ids.json)
           if [ "$CANISTER_ID" != "null" ]; then
             echo "Using existing canister ID: $CANISTER_ID"
-            dfx canister --network ${{ inputs.network }} call $CANISTER_ID --no-wallet || true
             dfx deploy --network ${{ inputs.network }} ${{ inputs.frontend_package }} --no-wallet
           else
             echo "Canister ID not found in canister_ids.json, creating new canister"
