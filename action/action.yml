@@ -118,6 +118,8 @@ runs:
 
     - name: Deploy Canister
       shell: bash
+      env:
+        DFX_WARNING: "-mainnet_plaintext_identity"
       run: |
         source "$HOME/.local/share/dfx/env"
         echo "Deploying: ${{ inputs.canister_name }}"
