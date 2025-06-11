@@ -27,15 +27,21 @@ runs:
     - name: Install dfx
       shell: bash
       run: |
-        # Detect architecture
-        ARCH=$(uname -m)
-        if [ "$ARCH" = "arm64" ] || [ "$ARCH" = "aarch64" ]; then
-          # For ARM architecture (M1/M2 Macs)
-          sh -ci "$(curl -fsSL https://internetcomputer.org/install.sh)"
-        else
-          # For x86_64 architecture
-          sh -ci "$(curl -fsSL https://internetcomputer.org/install.sh)"
-        fi
+        # Create dfx directory
+        mkdir -p $HOME/.local/share/dfx/bin
+        
+        # Download and install dfx
+        curl -L https://github.com/dfinity/dfx/releases/latest/download/dfx-x86_64-linux.tar.gz -o dfx.tar.gz
+        tar -xzf dfx.tar.gz
+        mv dfx $HOME/.local/share/dfx/bin/
+        chmod +x $HOME/.local/share/dfx/bin/dfx
+        
+        # Add to PATH
+        echo 'export PATH="$HOME/.local/share/dfx/bin:$PATH"' >> $HOME/.bashrc
+        export PATH="$HOME/.local/share/dfx/bin:$PATH"
+        
+        # Cleanup
+        rm dfx.tar.gz
 
     - name: Authenticate dfx
       shell: bash
