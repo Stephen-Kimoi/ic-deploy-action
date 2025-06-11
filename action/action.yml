@@ -118,9 +118,11 @@ runs:
       run: |
         source "$HOME/.local/share/dfx/env"
         mkdir -p .dfx/local/canisters/${{ inputs.frontend_package }}
-        if [ -f "${{ inputs.frontend_src_dir }}/assetstorage.did" ]; then
-          cp ${{ inputs.frontend_src_dir }}/assetstorage.did .dfx/local/canisters/${{ inputs.frontend_package }}/
+        # Create a basic assetstorage.did file if it doesn't exist
+        if [ ! -f "${{ inputs.frontend_src_dir }}/assetstorage.did" ]; then
+          echo "service : {}" > ${{ inputs.frontend_src_dir }}/assetstorage.did
         fi
+        cp ${{ inputs.frontend_src_dir }}/assetstorage.did .dfx/local/canisters/${{ inputs.frontend_package }}/
 
     - name: Build Frontend
       if: ${{ inputs.deploy_frontend == 'true' }}
