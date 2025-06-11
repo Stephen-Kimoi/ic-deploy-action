@@ -20,10 +20,32 @@ inputs:
     description: 'Directory containing frontend assets (default: dist)'
     required: false
     default: 'dist'
+  package:
+    description: 'Rust package name to build'
+    required: false
+  build_args:
+    description: 'Arguments to pass to cargo build'
+    required: false
+    default: ''
+  test:
+    description: 'Run tests with cargo test'
+    required: false
+    default: 'true'
+  gzip:
+    description: 'Gzip the wasm file'
+    required: false
+    default: 'true'
 
 runs:
   using: "composite"
   steps:
+    - name: Install Rust toolchain
+      uses: dtolnay/rust-toolchain@stable
+      with:
+        toolchain: stable
+        targets: wasm32-unknown-unknown
+        components: rustfmt, clippy
+
     - name: Install dfx
       uses: dfinity/setup-dfx@main
 
@@ -37,10 +59,44 @@ runs:
         fi
         dfx identity use deploy_identity
 
+    - name: Build
+      shell: bash
+      env:
+        CARGO_TERM_COLOR: always
+        RUSTFLAGS: "-D warnings"
+        CARGO_BUILD_TARGET: wasm32-unknown-unknown
+      run: cargo build --release -p "${{ inputs.package }}" ${{ inputs.build_args }}
+
+    - name: Create wasm directory
+      shell: bash
+      if: inputs.gzip == 'true'
+      run: mkdir -p wasm
+
+    - name: Gzip Wasm
+      shell: bash
+      if: inputs.gzip == 'true'
+      run: |
+        gzip -c target/wasm32-unknown-unknown/release/${{ inputs.package }}.wasm > wasm/${{ inputs.package }}_${{ github.sha }}.wasm.gz
+        cp target/wasm32-unknown-unknown/release/${{ inputs.package }}.wasm wasm/${{ inputs.package }}_${{ github.sha }}.wasm
+
+        gzip -c target/wasm32-unknown-unknown/release/${{ inputs.package }}.wasm > wasm/${{ inputs.package }}.wasm.gz
+        cp target/wasm32-unknown-unknown/release/${{ inputs.package }}.wasm wasm/${{ inputs.package }}.wasm
+
+    - name: Tests
+      shell: bash
+      if: inputs.test == 'true'
+      env:
+        CARGO_TERM_COLOR: always
+        RUSTFLAGS: "-D warnings"
+      run: cargo test
+
     - name: Deploy canisters
       shell: bash
       env:
         DFX_WARNING: "-mainnet_plaintext_identity"
+        CARGO_BUILD_TARGET: "wasm32-unknown-unknown"
+        CARGO_TERM_COLOR: "always"
+        RUSTFLAGS: "-D warnings"
       run: |
         if [ -n "${{ inputs.canister_name }}" ]; then
           dfx deploy ${{ inputs.canister_name }} --network ${{ inputs.network }} --yes
@@ -53,6 +109,9 @@ runs:
       shell: bash
       env:
         DFX_WARNING: "-mainnet_plaintext_identity"
+        CARGO_BUILD_TARGET: "wasm32-unknown-unknown"
+        CARGO_TERM_COLOR: "always"
+        RUSTFLAGS: "-D warnings"
       run: |
         if [ -d "${{ inputs.frontend_dir }}" ]; then
           dfx canister install frontend --network ${{ inputs.network }} --yes
