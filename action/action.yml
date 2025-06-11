@@ -124,12 +124,20 @@ runs:
         source "$HOME/.local/share/dfx/env"
         echo "Deploying: ${{ inputs.canister_name }}"
         
-        # Check if canister exists
-        if dfx canister --network ${{ inputs.network }} info ${{ inputs.canister_name }} 2>/dev/null; then
-          echo "Canister already exists, proceeding with upgrade..."
-          dfx deploy --network ${{ inputs.network }} ${{ inputs.canister_name }} --no-wallet
+        # Check if canister_ids.json exists
+        if [ -f "canister_ids.json" ]; then
+          echo "Found existing canister_ids.json, using existing canister IDs"
+          CANISTER_ID=$(jq -r ".${{ inputs.canister_name }}.${{ inputs.network }}" canister_ids.json)
+          if [ "$CANISTER_ID" != "null" ]; then
+            echo "Using existing canister ID: $CANISTER_ID"
+            dfx canister --network ${{ inputs.network }} call $CANISTER_ID --no-wallet || true
+            dfx deploy --network ${{ inputs.network }} ${{ inputs.canister_name }} --no-wallet
+          else
+            echo "Canister ID not found in canister_ids.json, creating new canister"
+            dfx deploy --network ${{ inputs.network }} ${{ inputs.canister_name }} --no-wallet
+          fi
         else
-          echo "Canister does not exist, creating new canister..."
+          echo "No canister_ids.json found, creating new canister"
           dfx deploy --network ${{ inputs.network }} ${{ inputs.canister_name }} --no-wallet
         fi
 
@@ -175,14 +183,22 @@ runs:
         source "$HOME/.local/share/dfx/env"
         echo "Deploying frontend..."
         
-        # Check if frontend canister exists
-        if ! dfx canister --network ${{ inputs.network }} info ${{ inputs.frontend_package }} 2>/dev/null; then
-          echo "Creating frontend canister..."
-          dfx canister create ${{ inputs.frontend_package }} --network ${{ inputs.network }} --no-wallet
+        # Check if canister_ids.json exists
+        if [ -f "canister_ids.json" ]; then
+          echo "Found existing canister_ids.json, using existing canister IDs"
+          CANISTER_ID=$(jq -r ".${{ inputs.frontend_package }}.${{ inputs.network }}" canister_ids.json)
+          if [ "$CANISTER_ID" != "null" ]; then
+            echo "Using existing canister ID: $CANISTER_ID"
+            dfx canister --network ${{ inputs.network }} call $CANISTER_ID --no-wallet || true
+            dfx deploy --network ${{ inputs.network }} ${{ inputs.frontend_package }} --no-wallet
+          else
+            echo "Canister ID not found in canister_ids.json, creating new canister"
+            dfx deploy --network ${{ inputs.network }} ${{ inputs.frontend_package }} --no-wallet
+          fi
+        else
+          echo "No canister_ids.json found, creating new canister"
+          dfx deploy --network ${{ inputs.network }} ${{ inputs.frontend_package }} --no-wallet
         fi
-        
-        # Deploy frontend
-        dfx deploy ${{ inputs.frontend_package }} --network ${{ inputs.network }} --no-wallet
 
     - name: Deploy frontend assets
       if: ${{ inputs.deploy_frontend == 'true' }}
