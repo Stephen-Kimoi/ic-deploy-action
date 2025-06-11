@@ -47,6 +47,10 @@ inputs:
     description: 'Minimum cycles balance required (in TC, default: 1)'
     required: false
     default: '1'
+  github_token:
+    description: 'GitHub token for pushing canister_ids.json'
+    required: true
+    default: '${{ github.token }}'
 
 runs:
   using: "composite"
@@ -149,6 +153,7 @@ runs:
           git config --global user.name "github-actions[bot]"
           git add canister_ids.json
           git commit -m "chore: update canister IDs" || true
+          git remote set-url origin https://x-access-token:${{ inputs.github_token }}@github.com/${{ github.repository }}
           git push origin main
         fi
 
