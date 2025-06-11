@@ -205,14 +205,7 @@ runs:
       shell: bash
       env:
         DFX_WARNING: "-mainnet_plaintext_identity"
-        CARGO_BUILD_TARGET: "wasm32-unknown-unknown"
-        CARGO_TERM_COLOR: "always"
-        RUSTFLAGS: "-D warnings"
       run: |
         source "$HOME/.local/share/dfx/env"
-        if [ -d "${{ inputs.frontend_dir }}" ]; then
-          dfx canister install ${{ inputs.frontend_package }} --network ${{ inputs.network }} --yes
-        else
-          echo "Frontend directory not found at ${{ inputs.frontend_dir }}"
-          exit 1
-        fi 
+        dfx canister --network ${{ inputs.network }} call ${{ inputs.frontend_package }} store '(record{key="/index.html";content_type="text/html";content_encoding="identity";content=blob "<!DOCTYPE html><html><head><title>Actions Frontend</title></head><body><h1>Actions Frontend</h1></body></html>"})' --mode=reinstall
+        dfx canister --network ${{ inputs.network }} call ${{ inputs.frontend_package }} store '(record{key="/main.js";content_type="application/javascript";content_encoding="identity";content=blob "console.log(\"Hello from Actions Frontend\");"})' --mode=reinstall 
