@@ -148,6 +148,8 @@ runs:
     - name: Build Frontend
       if: ${{ inputs.deploy_frontend == 'true' }}
       shell: bash
+      env:
+        DFX_WARNING: "-mainnet_plaintext_identity"
       run: |
         source "$HOME/.local/share/dfx/env"
         # Create necessary directories
