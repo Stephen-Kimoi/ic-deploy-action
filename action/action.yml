@@ -117,6 +117,7 @@ runs:
       run: cargo test
 
     - name: Deploy Canister
+      shell: bash
       run: |
         source "$HOME/.local/share/dfx/env"
         echo "Deploying: ${{ inputs.canister_name }}"
