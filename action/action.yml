@@ -25,7 +25,17 @@ runs:
   using: "composite"
   steps:
     - name: Install dfx
-      uses: dfinity/setup-dfx@main
+      shell: bash
+      run: |
+        # Detect architecture
+        ARCH=$(uname -m)
+        if [ "$ARCH" = "arm64" ] || [ "$ARCH" = "aarch64" ]; then
+          # For ARM architecture (M1/M2 Macs)
+          sh -ci "$(curl -fsSL https://internetcomputer.org/install.sh)"
+        else
+          # For x86_64 architecture
+          sh -ci "$(curl -fsSL https://internetcomputer.org/install.sh)"
+        fi
 
     - name: Authenticate dfx
       shell: bash
