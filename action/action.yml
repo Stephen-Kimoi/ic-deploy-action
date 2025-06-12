@@ -128,7 +128,7 @@ runs:
         source "$HOME/.local/share/dfx/env"
         echo "Deploying: ${{ inputs.canister_name }}"
         
-        # Check if canister_ids.json exists in the repository
+        # Check if canister_ids.json exists in the workspace
         if [ -f "canister_ids.json" ]; then
           echo "Found existing canister_ids.json, using existing canister IDs"
           CANISTER_ID=$(jq -r ".${{ inputs.canister_name }}.${{ inputs.network }}" canister_ids.json)
@@ -144,17 +144,14 @@ runs:
           dfx deploy --network ${{ inputs.network }} ${{ inputs.canister_name }} --no-wallet
         fi
 
-    - name: Commit canister_ids.json
+    - name: Store Canister IDs
       if: success()
       shell: bash
       run: |
         if [ -f "canister_ids.json" ]; then
-          git config --global user.email "github-actions[bot]@users.noreply.github.com"
-          git config --global user.name "github-actions[bot]"
-          git add canister_ids.json
-          git commit -m "chore: update canister IDs" || true
-          git remote set-url origin https://x-access-token:${{ inputs.github_token }}@github.com/${{ github.repository }}
-          git push origin main
+          echo "Storing canister IDs for future deployments"
+          mkdir -p .github
+          cp canister_ids.json .github/canister_ids.json
         fi
 
     - name: Prepare Frontend Build
