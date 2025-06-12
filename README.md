@@ -45,6 +45,19 @@ jobs:
 | `deploy_frontend` | Whether to deploy frontend assets | No | 'true' |
 | `frontend_dir` | Directory containing frontend assets | No | 'dist' |
 
+
+## Generating your PEM key: 
+```bash 
+# Create a new identity
+dfx identity new test-identity --storage-mode=plaintext
+
+# Export the identity to a PEM file
+dfx identity export test-identity > test-identity.pem
+
+# Convert to base64
+base64 -i test-identity.pem > test-identity.pem.base64
+```
+
 ## Security
 
 - The PEM key should be stored as a GitHub secret
