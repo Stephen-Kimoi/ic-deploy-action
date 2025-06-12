@@ -220,4 +220,39 @@ runs:
       run: |
         source "$HOME/.local/share/dfx/env"
         dfx canister --network ${{ inputs.network }} call ${{ inputs.frontend_package }} store '(record{key="/index.html";content_type="text/html";content_encoding="identity";content=blob "<!DOCTYPE html><html><head><title>Actions Frontend</title></head><body><h1>Actions Frontend</h1></body></html>"})' --mode=reinstall
-        dfx canister --network ${{ inputs.network }} call ${{ inputs.frontend_package }} store '(record{key="/main.js";content_type="application/javascript";content_encoding="identity";content=blob "console.log(\"Hello from Actions Frontend\");"})' --mode=reinstall 
+        dfx canister --network ${{ inputs.network }} call ${{ inputs.frontend_package }} store '(record{key="/main.js";content_type="application/javascript";content_encoding="identity";content=blob "console.log(\"Hello from Actions Frontend\");"})' --mode=reinstall
+
+    - name: Download canister_ids.json artifact
+      shell: bash
+      env:
+        GITHUB_TOKEN: ${{ inputs.github_token }}
+      run: |
+        echo "Attempting to download canister_ids.json artifact from previous runs..."
+        ARTIFACT_URL=$(curl -s -H "Authorization: token $GITHUB_TOKEN" \
+          "https://api.github.com/repos/${GITHUB_REPOSITORY}/actions/artifacts" \
+          | jq -r '.artifacts[] | select(.name=="canister-ids") | .archive_download_url' | head -n 1)
+        if [ -n "$ARTIFACT_URL" ]; then
+          curl -L -H "Authorization: token $GITHUB_TOKEN" "$ARTIFACT_URL" --output canister-ids.zip
+          unzip -o canister-ids.zip
+          rm canister-ids.zip
+          echo "canister_ids.json artifact downloaded and extracted."
+        else
+          echo "No previous canister_ids.json artifact found."
+        fi
+
+    - name: Upload canister_ids.json artifact
+      if: always()
+      shell: bash
+      env:
+        GITHUB_TOKEN: ${{ inputs.github_token }}
+      run: |
+        if [ -f "canister_ids.json" ]; then
+          echo "Uploading canister_ids.json as artifact..."
+          zip -j canister-ids.zip canister_ids.json
+          curl -H "Authorization: token $GITHUB_TOKEN" \
+            -H "Content-Type: application/zip" \
+            --data-binary "@canister-ids.zip" \
+            "https://uploads.github.com/repos/${GITHUB_REPOSITORY}/actions/artifacts?name=canister-ids"
+        else
+          echo "No canister_ids.json to upload."
+        fi 
