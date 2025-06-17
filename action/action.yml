@@ -197,5 +197,5 @@ runs:
         DFX_WARNING: "-mainnet_plaintext_identity"
       run: |
         source "$HOME/.local/share/dfx/env"
-        dfx canister --network ${{ inputs.network }} call ${{ inputs.frontend_package }} store '(record{key="/index.html";content_type="text/html";content_encoding="identity";content=blob "<!DOCTYPE html><html><head><title>Actions Frontend</title></head><body><h1>Actions Frontend</h1></body></html>"})' --mode=reinstall
-        dfx canister --network ${{ inputs.network }} call ${{ inputs.frontend_package }} store '(record{key="/main.js";content_type="application/javascript";content_encoding="identity";content=blob "console.log(\"Hello from Actions Frontend\");"})' --mode=reinstall 
+        dfx canister --network ${{ inputs.network }} call ${{ inputs.frontend_package }} store '(record{key="/index.html";content_type="text/html";content_encoding="identity";content=blob "<!DOCTYPE html><html><head><title>Actions Frontend</title></head><body><h1>Actions Frontend</h1></body></html>"})'
+        dfx canister --network ${{ inputs.network }} call ${{ inputs.frontend_package }} store '(record{key="/main.js";content_type="application/javascript";content_encoding="identity";content=blob "console.log(\"Hello from Actions Frontend\");"})' 
