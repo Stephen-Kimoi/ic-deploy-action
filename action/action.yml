@@ -43,14 +43,6 @@ inputs:
     description: 'Directory containing frontend source code (default: src/frontend)'
     required: false
     default: 'src/frontend'
-  min_cycles:
-    description: 'Minimum cycles balance required (in TC, default: 1)'
-    required: false
-    default: '1'
-  github_token:
-    description: 'GitHub token for pushing canister_ids.json'
-    required: true
-    default: '${{ github.token }}'
 
 runs:
   using: "composite"
@@ -74,20 +66,6 @@ runs:
           dfx identity import --storage-mode=plaintext deploy_identity deploy_identity.pem
         fi
         dfx identity use deploy_identity
-
-    - name: Check Cycles Balance
-      shell: bash
-      env:
-        DFX_WARNING: "-mainnet_plaintext_identity"
-      run: |
-        source "$HOME/.local/share/dfx/env"
-        BALANCE=$(dfx cycles balance --network ${{ inputs.network }} | grep -o '[0-9.]*' | head -1)
-        echo "Current cycles balance: $BALANCE TC"
-        if (( $(echo "$BALANCE < ${{ inputs.min_cycles }}" | bc -l) )); then
-          echo "Warning: Cycles balance is below minimum threshold of ${{ inputs.min_cycles }} TC"
-          echo "Please ensure you have sufficient cycles for deployment"
-          exit 1
-        fi
 
     - name: Build
       shell: bash
@@ -134,14 +112,14 @@ runs:
           CANISTER_ID=$(jq -r ".${{ inputs.canister_name }}.${{ inputs.network }}" canister_ids.json)
           if [ "$CANISTER_ID" != "null" ]; then
             echo "Using existing canister ID: $CANISTER_ID"
-            dfx deploy --network ${{ inputs.network }} ${{ inputs.canister_name }} --no-wallet
+            dfx canister install ${{ inputs.canister_name }} --network ${{ inputs.network }} --wasm wasm/${{ inputs.backend_package }}.wasm.gz --mode upgrade --yes
           else
-            echo "Canister ID not found in canister_ids.json, creating new canister"
-            dfx deploy --network ${{ inputs.network }} ${{ inputs.canister_name }} --no-wallet
+            echo "Error: Canister ID not found in canister_ids.json. Cannot deploy without existing canister ID."
+            exit 1
           fi
         else
-          echo "No canister_ids.json found, creating new canister"
-          dfx deploy --network ${{ inputs.network }} ${{ inputs.canister_name }} --no-wallet
+          echo "Error: No canister_ids.json found. Cannot deploy without existing canister ID."
+          exit 1
         fi
 
     - name: Store Canister IDs
@@ -202,14 +180,14 @@ runs:
           CANISTER_ID=$(jq -r ".${{ inputs.frontend_package }}.${{ inputs.network }}" canister_ids.json)
           if [ "$CANISTER_ID" != "null" ]; then
             echo "Using existing canister ID: $CANISTER_ID"
-            dfx deploy --network ${{ inputs.network }} ${{ inputs.frontend_package }} --no-wallet
+            dfx canister install ${{ inputs.frontend_package }} --network ${{ inputs.network }} --wasm wasm/${{ inputs.frontend_package }}.wasm.gz --mode upgrade --yes
           else
-            echo "Canister ID not found in canister_ids.json, creating new canister"
-            dfx deploy --network ${{ inputs.network }} ${{ inputs.frontend_package }} --no-wallet
+            echo "Error: Canister ID not found in canister_ids.json. Cannot deploy without existing canister ID."
+            exit 1
           fi
         else
-          echo "No canister_ids.json found, creating new canister"
-          dfx deploy --network ${{ inputs.network }} ${{ inputs.frontend_package }} --no-wallet
+          echo "Error: No canister_ids.json found. Cannot deploy without existing canister ID."
+          exit 1
         fi
 
     - name: Deploy frontend assets
