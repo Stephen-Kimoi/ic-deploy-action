@@ -27,8 +27,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
       
       - name: Deploy to IC
         uses: Stephen-Kimoi/ic-deploy-action/action@v0.1.0-beta
