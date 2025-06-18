@@ -1,5 +1,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
+[![Deploy to IC](https://github.com/Stephen-Kimoi/actions-testing/actions/workflows/deploy.yml/badge.svg)](https://github.com/Stephen-Kimoi/actions-testing/actions/workflows/deploy.yml)
+
 # Internet Computer Deploy Action
 
 A GitHub Action for deploying Internet Computer (IC) projects, including backend canisters and frontend assets.
@@ -56,7 +58,8 @@ jobs:
 ```
 
 5. **Generate PEM Key**: Follow the instructions in the [Generating your PEM key](#generating-your-pem-key) section below to create your PEM key
-6. **Add to GitHub Secrets**: Add your base64-encoded PEM key as `IC_PEM_KEY` in your GitHub repository secrets
+6. **Add to GitHub Secrets**: Add your base64-encoded PEM key as `IC_PEM_KEY` in your GitHub repository secrets. 
+> Go to settings inside your repository. Scroll to the "Secrets and Variables" section at the bottom of the sleft sidebar. Click on actions, the add "New Repository Secret". 
 7. **Push to GitHub**: Push your code to GitHub and wait to see the deployment changes
 
 ### Important Notes
