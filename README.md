@@ -14,6 +14,17 @@ A GitHub Action for deploying Internet Computer (IC) projects, including backend
 
 ## Usage
 
+### Prerequisites
+
+1. **Mainnet Deployment**: Ensure you have deployed your canisters first. This action relies on the `canister_ids.json` file that is generated during local deployment.
+2. **GitHub Secrets**: Set up your `IC_PEM_KEY` secret in your GitHub repository settings.
+
+### Setup Steps
+
+1. **Create Workflow Directory**: Create a `.github/workflows` directory in the root of your repository
+2. **Create Deploy File**: Create a `deploy.yml` file inside the `.github/workflows` directory
+3. **Add Workflow Content**: Paste the following content into your `deploy.yml` file:
+
 ```yaml
 name: Deploy to IC
 
@@ -33,13 +44,20 @@ jobs:
         with:
           pem_key: ${{ secrets.IC_PEM_KEY }}
           network: 'ic'
-          canister_name: 'actions_backend'
+          canister_name: 'your_backend_canister_name'
           deploy_frontend: 'true'
-          frontend_dir: 'src/actions_frontend/dist'
-          backend_package: 'actions_backend'
-          frontend_package: 'actions_frontend'
-          frontend_src_dir: 'src/actions_frontend'
+          frontend_dir: 'src/your_frontend_dir/dist'
+          backend_package: 'your_backend_package'
+          frontend_package: 'your_frontend_package'
+          frontend_src_dir: 'src/your_frontend_dir'
 ```
+
+### Important Notes
+
+- The action requires a valid `canister_ids.json` file for deployment
+- Canisters must be pre-deployed before using this action
+- The action will only upgrade existing canisters, it will not create new ones
+- Frontend assets are deployed using the `store` method of the frontend canister
 
 ## Inputs
 
@@ -56,13 +74,6 @@ jobs:
 | `test` | Run tests with cargo test | No | 'true' |
 | `gzip` | Gzip the wasm file | No | 'true' |
 | `frontend_src_dir` | Directory containing frontend source code | No | 'src/frontend' |
-
-## Important Notes
-
-- The action requires a valid `canister_ids.json` file for deployment
-- Canisters must be pre-deployed before using this action
-- The action will only upgrade existing canisters, it will not create new ones
-- Frontend assets are deployed using the `store` method of the frontend canister
 
 ## Generating your PEM key: 
 ```bash 
