@@ -17,7 +17,7 @@ A GitHub Action for deploying Internet Computer (IC) projects, including backend
 ### Prerequisites
 
 1. **Mainnet Deployment**: Ensure you have deployed your canisters first. This action relies on the `canister_ids.json` file that is generated during deployment.
-2. **GitHub Secrets**: Set up your `IC_PEM_KEY` secret in your GitHub repository settings.
+2. **GitHub Secrets**: Set up your `IC_PEM_KEY` secret in your GitHub repository settings. See [Generating your PEM key](#generating-your-pem-key) below for instructions.
 
 ### Setup Steps
 
@@ -52,6 +52,10 @@ jobs:
           frontend_package: 'your_frontend_package'
           frontend_src_dir: 'src/your_frontend_dir'
 ```
+
+5. **Generate PEM Key**: Follow the instructions in the [Generating your PEM key](#generating-your-pem-key) section below to create your PEM key
+6. **Add to GitHub Secrets**: Add your base64-encoded PEM key as `IC_PEM_KEY` in your GitHub repository secrets
+7. **Push to GitHub**: Push your code to GitHub and wait to see the deployment changes
 
 ### Important Notes
 
