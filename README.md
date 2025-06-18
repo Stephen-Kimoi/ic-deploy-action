@@ -1,3 +1,5 @@
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+
 # Internet Computer Deploy Action
 
 A GitHub Action for deploying Internet Computer (IC) projects, including backend canisters and frontend assets.
