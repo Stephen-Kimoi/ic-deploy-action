@@ -22,6 +22,27 @@ A GitHub Action for deploying Internet Computer (IC) projects, including backend
 
 1. **Mainnet Deployment**: Ensure you have deployed your canisters first. This action relies on the `canister_ids.json` file that is generated during deployment.
 2. **GitHub Secrets**: Set up your `IC_PEM_KEY` secret in your GitHub repository settings. See [Generating your PEM key](#generating-your-pem-key) below for instructions.
+3. **Recommended Project Structure**:
+
+   Your project should have a structure similar to the following:
+
+   ```
+   your-project/
+   ├── src/
+   │   └── backend/                  # Backend Rust canister source
+   │   └── frontend/                 # Frontend source (if any)
+   │       └── dist/                 # Built frontend assets
+   ├── dfx.json                      # DFINITY project configuration
+   ├── canister_ids.json             # Canister IDs (generated after deployment)
+   ├── Cargo.toml                    # Rust package manifest (for backend)
+   ├── package.json                  # Node.js manifest (for frontend, if any)
+   ├── tsconfig.json                 # TypeScript config (if any)
+   ├── node_modules/                 # Node.js dependencies (if any)
+   └── ...
+   ```
+
+   - Adjust `backend` and `frontend` to match your actual canister/package names.
+   - The action expects the backend and frontend directories to be specified in the workflow inputs. 
 
 ### Setup Steps
 
