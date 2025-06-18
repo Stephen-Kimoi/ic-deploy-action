@@ -16,14 +16,15 @@ A GitHub Action for deploying Internet Computer (IC) projects, including backend
 
 ### Prerequisites
 
-1. **Mainnet Deployment**: Ensure you have deployed your canisters first. This action relies on the `canister_ids.json` file that is generated during local deployment.
+1. **Mainnet Deployment**: Ensure you have deployed your canisters first. This action relies on the `canister_ids.json` file that is generated during deployment.
 2. **GitHub Secrets**: Set up your `IC_PEM_KEY` secret in your GitHub repository settings.
 
 ### Setup Steps
 
-1. **Create Workflow Directory**: Create a `.github/workflows` directory in the root of your repository
-2. **Create Deploy File**: Create a `deploy.yml` file inside the `.github/workflows` directory
-3. **Add Workflow Content**: Paste the following content into your `deploy.yml` file:
+1. **Deploy Canisters Locally**: Deploy your canisters using `dfx deploy --network ic` to generate the required `canister_ids.json` file
+2. **Create Workflow Directory**: Create a `.github/workflows` directory in the root of your repository
+3. **Create Deploy File**: Create a `deploy.yml` file inside the `.github/workflows` directory
+4. **Add Workflow Content**: Paste the following content into your `deploy.yml` file:
 
 ```yaml
 name: Deploy to IC
