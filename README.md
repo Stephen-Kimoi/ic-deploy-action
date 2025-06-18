@@ -2,7 +2,7 @@
 
 # Internet Computer Deploy Action
 
-A GitHub Action for deploying Internet Computer (IC) projects, including backend canisters and frontend assets.
+A GitHub Action for automating deployments on Internet Computer (ICP), for both backend canisters and frontend assets. 
 
 ## Features
 
