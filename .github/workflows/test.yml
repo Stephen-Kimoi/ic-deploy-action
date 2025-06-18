@@ -1,4 +1,4 @@
-name: Simple IC Deploy Action Test
+name: IC Deploy Action Integration Test
 
 on:
   push:
@@ -6,13 +6,27 @@ on:
   pull_request:
 
 jobs:
-  test:
+  integration-test:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout test canister project
+        uses: actions/checkout@v3
+        with:
+          repository: Stephen-Kimoi/actions-testing
+          path: actions-testing
 
-      - name: Deploy to IC (local)
-        uses: ./action
+      - name: Checkout ic-deploy-action
+        uses: actions/checkout@v3
+        with:
+          path: actions-testing/ic-deploy-action
+
+      - name: Install dependencies (test project)
+        run: |
+          cd actions-testing
+          npm install
+
+      - name: Deploy to IC
+        uses: ./ic-deploy-action/action
         with:
           pem_key: ${{ secrets.IC_PEM_KEY }}
           network: 'ic'
@@ -22,3 +36,4 @@ jobs:
           backend_package: 'actions_backend'
           frontend_package: 'actions_frontend'
           frontend_src_dir: 'src/actions_frontend'
+        # working-directory: actions-testing 
