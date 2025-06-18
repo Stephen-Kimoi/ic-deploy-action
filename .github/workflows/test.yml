@@ -1,0 +1,24 @@
+name: Simple IC Deploy Action Test
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Deploy to IC (local)
+        uses: ./action
+        with:
+          pem_key: ${{ secrets.IC_PEM_KEY }}
+          network: 'ic'
+          canister_name: 'actions_backend'
+          deploy_frontend: 'true'
+          frontend_dir: 'src/actions_frontend/dist'
+          backend_package: 'actions_backend'
+          frontend_package: 'actions_frontend'
+          frontend_src_dir: 'src/actions_frontend'
