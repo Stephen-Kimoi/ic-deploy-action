@@ -64,7 +64,7 @@ jobs:
       - uses: actions/checkout@v3
       
       - name: Deploy to IC
-        uses: Stephen-Kimoi/ic-deploy-action/action@v0.1.0-beta
+        uses: Stephen-Kimoi/ic-deploy-action/action@v0.1.0
         with:
           pem_key: ${{ secrets.IC_PEM_KEY }}
           network: 'ic'
@@ -129,7 +129,7 @@ base64 -i test-identity.pem > test-identity.pem.base64
 
 ```yaml
 - name: Deploy to IC
-  uses: Stephen-Kimoi/ic-deploy-action/action@v0.1.0-beta
+  uses: Stephen-Kimoi/ic-deploy-action/action@v0.1.0
   with:
     pem_key: ${{ secrets.IC_PEM_KEY }}
     network: 'ic'
@@ -145,7 +145,7 @@ base64 -i test-identity.pem > test-identity.pem.base64
 
 ```yaml
 - name: Deploy to IC
-  uses: Stephen-Kimoi/ic-deploy-action/action@v0.1.0-beta
+  uses: Stephen-Kimoi/ic-deploy-action/action@v0.1.0
   with:
     pem_key: ${{ secrets.IC_PEM_KEY }}
     network: 'ic'
@@ -158,7 +158,7 @@ base64 -i test-identity.pem > test-identity.pem.base64
 
 ```yaml
 - name: Deploy to IC
-  uses: Stephen-Kimoi/ic-deploy-action/action@v0.1.0-beta
+  uses: Stephen-Kimoi/ic-deploy-action/action@v0.1.0
   with:
     pem_key: ${{ secrets.IC_PEM_KEY }}
     network: 'ic'
