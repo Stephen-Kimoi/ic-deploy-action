@@ -44,42 +44,69 @@ A GitHub Action for automating deployments on Internet Computer (ICP), for both 
 
 ### Setup Steps
 
-1. **Deploy Canisters Locally**: Deploy your canisters using `dfx deploy --network ic` to generate the required `canister_ids.json` file
-2. **Create Workflow Directory**: Create a `.github/workflows` directory in the root of your repository
-3. **Create Deploy File**: Create a `deploy.yml` file inside the `.github/workflows` directory
-4. **Add Workflow Content**: Paste the following content into your `deploy.yml` file:
+1. **Deploy Canisters Locally:**
+   ```bash
+   dfx deploy --network ic
+   ```
+   This generates the required `canister_ids.json` file.
 
-```yaml
-name: Deploy to IC
+2. **Create Workflow Directory:**
+   ```bash
+   mkdir -p .github/workflows
+   ```
 
-on:
-  push:
-    branches: [ main ]
-  workflow_dispatch:
+3. **Create Deploy File:**
+   Create a `deploy.yml` file inside the `.github/workflows` directory.
 
-jobs:
-  deploy:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      
-      - name: Deploy to IC
-        uses: Stephen-Kimoi/ic-deploy-action/action@v0.1.0
-        with:
-          pem_key: ${{ secrets.IC_PEM_KEY }}
-          network: 'ic'
-          canister_name: 'your_backend_canister_name'
-          deploy_frontend: 'true'
-          frontend_dir: 'src/your_frontend_dir/dist'
-          backend_package: 'your_backend_package'
-          frontend_package: 'your_frontend_package'
-          frontend_src_dir: 'src/your_frontend_dir'
-```
+4. **Add Workflow Content:**
+   Paste the following into your `deploy.yml` file:
 
-5. **Generate PEM Key**: Follow the instructions in the [Generating your PEM key](#generating-your-pem-key) section below to create your PEM key
-6. **Add to GitHub Secrets**: Add your base64-encoded PEM key as `IC_PEM_KEY` in your GitHub repository secrets. 
-> Go to settings inside your repository. Scroll to the "Secrets and Variables" section at the bottom of the sleft sidebar. Click on actions, the add "New Repository Secret". 
-7. **Push to GitHub**: Push your code to GitHub and wait to see the deployment changes
+   ```yaml
+   name: Deploy to IC
+
+   on:
+     push:
+       branches: [ main ]
+     workflow_dispatch:
+
+   jobs:
+     deploy:
+       runs-on: ubuntu-latest
+       steps:
+         - uses: actions/checkout@v3
+         - name: Deploy to IC
+           uses: Stephen-Kimoi/ic-deploy-action/action@v0.1.0
+           with:
+             pem_key: ${{ secrets.IC_PEM_KEY }}
+             network: 'ic'
+             canister_name: 'your_backend_canister_name'
+             deploy_frontend: 'true'
+             frontend_dir: 'src/your_frontend_dir/dist'
+             backend_package: 'your_backend_package'
+             frontend_package: 'your_frontend_package'
+             frontend_src_dir: 'src/your_frontend_dir'
+   ```
+
+5. **Generate PEM Key:**
+   - Create a new identity:
+     ```bash
+     dfx identity new test-identity --storage-mode=plaintext
+     ```
+   - Export the identity to a PEM file:
+     ```bash
+     dfx identity export test-identity > test-identity.pem
+     ```
+   - Convert to base64:
+     ```bash
+     base64 -i test-identity.pem > test-identity.pem.base64
+     ```
+
+6. **Add to GitHub Secrets:**
+   - Add your base64-encoded PEM key as `IC_PEM_KEY` in your GitHub repository secrets.
+   - Go to your repository settings, scroll to "Secrets and Variables" > "Actions", and add a new repository secret named `IC_PEM_KEY`.
+
+7. **Push to GitHub:**
+   - Push your code to GitHub and the deployment will run automatically on push to `main` or via manual workflow dispatch.
 
 ### Important Notes
 
