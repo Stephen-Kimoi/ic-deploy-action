@@ -12,13 +12,13 @@ jobs:
       - uses: actions/checkout@v3
       
       - name: Deploy to IC
-        uses: Stephen-Kimoi/ic-deploy-action@v0.1.0-beta
+        uses: Stephen-Kimoi/ic-deploy-action@v0.1.0
         with:
           pem_key: ${{ secrets.IC_PEM_KEY }}
           network: 'ic'
           deploy_frontend: 'true'
-          frontend_dir: 'dist'
+          frontend_dir: 'src/frontend/dist'
           backend_package: 'backend'
-          frontend_package: 'frontend'
+          frontend_package: 'frontend' # if you have a frontend
           test: 'true'
-          gzip: 'true' 
+          gzip: 'true'  

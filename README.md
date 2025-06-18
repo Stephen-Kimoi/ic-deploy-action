@@ -1,6 +1,4 @@
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
-
-[![Deploy to IC](https://github.com/Stephen-Kimoi/actions-testing/actions/workflows/deploy.yml/badge.svg)](https://github.com/Stephen-Kimoi/actions-testing/actions/workflows/deploy.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)      [![Deploy to IC](https://github.com/Stephen-Kimoi/actions-testing/actions/workflows/deploy.yml/badge.svg)](https://github.com/Stephen-Kimoi/actions-testing/actions/workflows/deploy.yml)
 
 # Internet Computer Deploy Action
 
