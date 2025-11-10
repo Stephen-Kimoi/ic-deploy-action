@@ -76,7 +76,7 @@ A GitHub Action for automating deployments on Internet Computer (ICP), for both 
        steps:
          - uses: actions/checkout@v3
          - name: Deploy to IC
-           uses: Stephen-Kimoi/ic-deploy-action/action@v0.1.0
+           uses: Stephen-Kimoi/ic-deploy-action/action@v0.1.1
            with:
              pem_key: ${{ secrets.IC_PEM_KEY }}
              network: 'ic'
@@ -158,7 +158,7 @@ base64 -i test-identity.pem > test-identity.pem.base64
 
 ```yaml
 - name: Deploy to IC
-  uses: Stephen-Kimoi/ic-deploy-action/action@v0.1.0
+  uses: Stephen-Kimoi/ic-deploy-action/action@v0.1.1
   with:
     pem_key: ${{ secrets.IC_PEM_KEY }}
     network: 'ic'
@@ -175,7 +175,7 @@ base64 -i test-identity.pem > test-identity.pem.base64
 
 ```yaml
 - name: Deploy to IC
-  uses: Stephen-Kimoi/ic-deploy-action/action@v0.1.0
+  uses: Stephen-Kimoi/ic-deploy-action/action@v0.1.1
   with:
     pem_key: ${{ secrets.IC_PEM_KEY }}
     network: 'ic'
@@ -189,7 +189,7 @@ base64 -i test-identity.pem > test-identity.pem.base64
 
 ```yaml
 - name: Deploy to IC
-  uses: Stephen-Kimoi/ic-deploy-action/action@v0.1.0
+  uses: Stephen-Kimoi/ic-deploy-action/action@v0.1.1
   with:
     pem_key: ${{ secrets.IC_PEM_KEY }}
     network: 'ic'
