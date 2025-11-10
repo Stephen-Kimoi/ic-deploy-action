@@ -16,13 +16,17 @@ inputs:
     description: 'Whether to deploy frontend assets (default: true)'
     required: false
     default: 'true'
+  deploy_backend:
+    description: 'Whether to build and deploy backend canisters (default: true)'
+    required: false
+    default: 'true'
   frontend_dir:
     description: 'Directory containing frontend assets (default: dist)'
     required: false
     default: 'dist'
   backend_package:
     description: 'Name of your backend Rust package as specified in Cargo.toml (e.g., "my_backend", "backend", "canister")'
-    required: true
+    required: false
   frontend_package:
     description: 'Name of your frontend package (default: frontend)'
     required: false
@@ -67,7 +71,16 @@ runs:
         fi
         dfx identity use deploy_identity
 
+    - name: Validate backend inputs
+      shell: bash
+      run: |
+        if [ "${{ inputs.deploy_backend }}" = "true" ] && [ -z "${{ inputs.backend_package }}" ]; then
+          echo "Error: backend_package is required when deploy_backend is true."
+          exit 1
+        fi
+
     - name: Build
+      if: inputs.deploy_backend == 'true'
       shell: bash
       env:
         CARGO_TERM_COLOR: always
@@ -76,13 +89,13 @@ runs:
       run: cargo build --release -p "${{ inputs.backend_package }}" ${{ inputs.build_args }}
 
     - name: Create wasm directory
+      if: inputs.deploy_backend == 'true' && inputs.gzip == 'true'
       shell: bash
-      if: inputs.gzip == 'true'
       run: mkdir -p wasm
 
     - name: Gzip Wasm
+      if: inputs.deploy_backend == 'true' && inputs.gzip == 'true'
       shell: bash
-      if: inputs.gzip == 'true'
       run: |
         gzip -c target/wasm32-unknown-unknown/release/${{ inputs.backend_package }}.wasm > wasm/${{ inputs.backend_package }}_${{ github.sha }}.wasm.gz
         cp target/wasm32-unknown-unknown/release/${{ inputs.backend_package }}.wasm wasm/${{ inputs.backend_package }}_${{ github.sha }}.wasm
@@ -91,14 +104,15 @@ runs:
         cp target/wasm32-unknown-unknown/release/${{ inputs.backend_package }}.wasm wasm/${{ inputs.backend_package }}.wasm
 
     - name: Tests
+      if: inputs.deploy_backend == 'true' && inputs.test == 'true'
       shell: bash
-      if: inputs.test == 'true'
       env:
         CARGO_TERM_COLOR: always
         RUSTFLAGS: "-D warnings"
       run: cargo test
 
     - name: Deploy Canister
+      if: inputs.deploy_backend == 'true'
       shell: bash
       env:
         DFX_WARNING: "-mainnet_plaintext_identity"
@@ -123,7 +137,7 @@ runs:
         fi
 
     - name: Store Canister IDs
-      if: success()
+      if: inputs.deploy_backend == 'true' && success()
       shell: bash
       run: |
         if [ -f "canister_ids.json" ]; then
