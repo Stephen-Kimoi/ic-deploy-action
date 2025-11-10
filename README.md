@@ -1,14 +1,14 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)      [![Deploy to IC](https://github.com/Stephen-Kimoi/actions-testing/actions/workflows/deploy.yml/badge.svg)](https://github.com/Stephen-Kimoi/actions-testing/actions/workflows/deploy.yml)
 
-# Internet Computer Deploy Action
+# Internet Computer (ICP) Deploy Action
 
-A GitHub Action for automating deployments on Internet Computer (ICP), for both backend canisters and frontend assets. 
+A GitHub Action for automating deployments on Internet Computer (ICP), for both backend canisters (Smart Contracts) and frontend assets. 
 
 ## Features
 
 - 🔐 Secure authentication using PEM keys
 - 🌐 Deploy to multiple networks (local, testnet, ic)
-- 🚀 Deploy specific canisters or all canisters
+- 📦 Deploy specific canisters or all canisters
 - 🎨 Optional frontend asset deployment
 - ⚡️ Fast and reliable deployment process
 - 🔄 Upgrade mode for existing canisters
@@ -19,6 +19,7 @@ A GitHub Action for automating deployments on Internet Computer (ICP), for both 
 ### Prerequisites
 
 1. **Mainnet Deployment**: Ensure you have deployed your canisters first. This action relies on the `canister_ids.json` file that is generated during deployment.
+  - If you provision canisters via the [CycleOps canister creation feature](https://docs.cycleops.dev/changelog/canister-creation), make sure to run `dfx deploy --network ic` afterwards so the canister already has code before the action attempts an upgrade. 
 2. **GitHub Secrets**: Set up your `IC_PEM_KEY` secret in your GitHub repository settings. See [Generating your PEM key](#generating-your-pem-key) below for instructions.
 3. **Recommended Project Structure**:
 
