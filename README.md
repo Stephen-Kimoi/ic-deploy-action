@@ -123,8 +123,9 @@ A GitHub Action for automating deployments on Internet Computer (ICP), for both 
 | `network` | Network to deploy to (local, testnet, ic) | Yes | 'ic' |
 | `canister_name` | Name of the canister to deploy | No | - |
 | `deploy_frontend` | Whether to deploy frontend assets | No | 'true' |
+| `deploy_backend` | Whether to build and deploy backend canisters | No | 'true' |
 | `frontend_dir` | Directory containing frontend assets | No | 'dist' |
-| `backend_package` | Name of your backend Rust package as specified in Cargo.toml | Yes | - |
+| `backend_package` | Name of your backend Rust package as specified in Cargo.toml | No (required when `deploy_backend` is `'true'`) | - |
 | `frontend_package` | Name of your frontend package | No | 'frontend' |
 | `build_args` | Arguments to pass to cargo build | No | '' |
 | `test` | Run tests with cargo test | No | 'true' |
@@ -162,6 +163,7 @@ base64 -i test-identity.pem > test-identity.pem.base64
     network: 'ic'
     canister_name: 'your_backend_canister_name'
     deploy_frontend: 'true'
+    deploy_backend: 'true'
     frontend_dir: 'src/your_frontend_dir/dist'
     backend_package: 'your_backend_package'
     frontend_package: 'your_frontend_package'
@@ -177,6 +179,7 @@ base64 -i test-identity.pem > test-identity.pem.base64
     pem_key: ${{ secrets.IC_PEM_KEY }}
     network: 'ic'
     canister_name: 'your_backend_canister_name'
+    deploy_backend: 'true'
     deploy_frontend: 'false'
     backend_package: 'your_backend_package'
 ```
@@ -191,8 +194,8 @@ base64 -i test-identity.pem > test-identity.pem.base64
     network: 'ic'
     canister_name: 'your_frontend_canister_name'
     deploy_frontend: 'true'
+    deploy_backend: 'false'
     frontend_dir: 'src/your_frontend_dir/dist'
-    backend_package: 'your_frontend_package'  # This will be used as the frontend package
     frontend_package: 'your_frontend_package'
     frontend_src_dir: 'src/your_frontend_dir'
 ```
