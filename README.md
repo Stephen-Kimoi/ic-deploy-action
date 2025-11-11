@@ -7,7 +7,6 @@ A GitHub Action for automating deployments on Internet Computer (ICP), for both 
 ## Features
 
 - 🔐 Secure authentication using PEM keys
-- 🌐 Deploy to multiple networks (local, testnet, ic)
 - 📦 Deploy specific canisters or all canisters
 - 🎨 Optional frontend asset deployment
 - ⚡️ Fast and reliable deployment process
